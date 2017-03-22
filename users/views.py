@@ -6,14 +6,17 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.models import Group
 
-from .utils import get_default_password, mail_kickoff
+from HexOmega.settings import BASE_DIR
+from .utils import get_default_password, mail_kickoff, uploaded_file_handler
 from .models import Project, AdminUser, MemberUser, LeaderUser, Task
 from .backends import CustomUserAuth
 from .forms.login_form import LoginForm
 from .forms.project_forms import CreateProjectForm
-from .forms.task_forms import CreateTaskForm
+from .forms.task_forms import CreateTaskForm, LeaderUpdateTaskForm
 
 from .Xav.user_context import url_context
+
+import os
 
 """
     These views are only for testing the models, and their access
@@ -139,15 +142,26 @@ def get_list_of_users(request):
 @login_required
 def leader_home(request, username):
     user = LeaderUser.objects.get(username__exact=username)
-    tasks = user.project.actionlist.task_set.all()
-    for task in Task.objects.all():
-        print(task.title, task.action_list.project.name)
+    try:
+        tasks = user.project.actionlist.task_set.all()
+    # for task in Task.objects.all():
+    #     print(task.title, task.action_list.project.name)
+    except Exception as e:
+        print('Ahhhhhh')
+        tasks = None
     return render(request, 'leader_home.html', {'user': user, 'tasks': tasks})
 
+
+# summer-paper-4342
 
 # ============================================================================
 # My project and tasks modules
 # 2017-03-22
+
+def get_project_path(p):
+    return os.path.join(BASE_DIR,
+                        os.path.join('projects', p.name + '/'))
+
 
 @login_required
 def create_project(request, username):
@@ -157,6 +171,8 @@ def create_project(request, username):
             p = form.save(commit=False)
             p.leader = LeaderUser.objects.get(username__exact=username)
             p.save()
+            path = get_project_path(p)
+            os.makedirs(path, 0o755)
         return redirect('display_leader', username)
     else:
         form = CreateProjectForm()
@@ -180,9 +196,9 @@ def create_task(request, username):
             t = Task.objects.create(title=title, est_end=est_end, status=status, to_leader=lt,
                                     action_list=l.project.actionlist)
             t.save()
-            for m in mem_dat.split(','):
-                print(m)
-                t.members.add(MemberUser.objects.get(username=m))
+            for m in mem_dat:
+                # print(m)
+                t.members.add(m)
             t.save()
             return redirect('leader_home', username)
         else:
@@ -191,3 +207,37 @@ def create_task(request, username):
         form = CreateTaskForm({'pn': l.project.name})
 
     return render(request, 'crtask.html', {'form': form})
+
+
+@login_required
+def leader_update_task(request, username, p):
+    l = LeaderUser.objects.get(username__exact=username)
+    if request.method == 'POST':
+        form = LeaderUpdateTaskForm(request.POST, request.FILES)
+        if form.is_valid():
+            mem_dat = form.cleaned_data.get('members')
+            title = form.cleaned_data.get('title')
+            est_end = form.cleaned_data.get('est_end')
+            status = form.cleaned_data.get('status')
+            lt = form.cleaned_data.get('to_leader')
+            if lt is None:
+                lt = False
+            # fix tis. Buggy now.
+            t, created = Task.objects.get_or_create(title=title, est_end=est_end, status=status, to_leader=lt,
+                                                    action_list=l.project.actionlist)
+            t.save()
+            for m in mem_dat:
+                # print(m)
+                t.members.add(m)
+            t.save()
+            file = request.FILES.get('deliverable')
+            uploaded_file_handler(file, get_project_path(l.project))
+
+            return redirect('leader_home', username)
+        else:
+            print(form.errors)
+    else:
+        form = LeaderUpdateTaskForm({'pn': l.project.name})
+
+    return render(request, 'crtask.html', {'form': form})
+    pass

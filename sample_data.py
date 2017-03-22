@@ -54,16 +54,15 @@ def setup():
     o.project_id = p.id
     o.save()
 
-    t = Task(status='Assigned', est_start=datetime.now() - timedelta(days=1),
+    t = Task(status='Assigned', start_date=datetime.now() - timedelta(days=1),
              est_end=datetime.now() + timedelta(days=1), action_list=p.actionlist)
-    t.actual_start = t.est_start
     t.actual_end = t.est_end
     t.title = 'Programming'
     t.save()
-    t.users.add(m)
-    t.users.add(n)
-    t.users.add(o)
-    t.users.add(l)
+    t.members.add(m)
+    t.members.add(n)
+    t.members.add(o)
+    t.to_leader = True
     t.save()
 
     start_schedule_thread()

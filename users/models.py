@@ -116,7 +116,10 @@ class Project(models.Model):
     description = models.TextField(max_length=500, blank=True)
     leader = models.OneToOneField(LeaderUser, models.DO_NOTHING)
     admins = models.ManyToManyField(AdminUser)
-    path = os.path.join(BASE_DIR, os.path.join('projects', os.path.join(str(get_name))))
+
+    def path(self):
+        os.path.join(BASE_DIR,
+                     os.path.join('projects', self.name + '/'))
 
     def __str__(self):
         return self.name
@@ -128,11 +131,14 @@ class Project(models.Model):
 @receiver(post_save, sender=Project)
 def add_activitylog(sender, instance, created, **kwargs):
     if created:
-        if not os.path.isdir(os.path.join(BASE_DIR, os.path.join('projects', str(instance.name)))):
-            os.makedirs(os.path.join(BASE_DIR, os.path.join('projects', str(instance.name))))
+        print(instance.name)
         c = os.path.join(BASE_DIR,
                          os.path.join('projects',
-                                      os.path.join(str(instance.name), 'activity.log')))
+                                      os.path.join(instance.name, 'activity.log')))
+        print(c)
+        print('/'.join(c.split('/')[:-1]))
+        instance.path = '/'.join(c.split('/')[:-1]) + '/'
+        # instance.save()
         ActivityLog.objects.create(title=instance.name, project=instance, content=c)
 
 
@@ -211,7 +217,6 @@ class Task(models.Model):
     action_list = models.ForeignKey(ActionList, models.CASCADE, null=True, blank=True)
     deliverable = models.FileField(upload_to=get_path, blank=True, null=True)
     to_leader = models.NullBooleanField(verbose_name="Is the leader working on this Task?", null=True)
-    users = models.CharField(blank=False, null=True, max_length=10)
     members = models.ManyToManyField(MemberUser)
 
     def __str__(self):
@@ -233,7 +238,6 @@ class ActivityLog(models.Model):
 
     class Meta:
         db_table = 'ActivityLog'
-
 
 # @receiver(post_save, sender=MemberUser)
 # def add_member_to_group(sender, instance, created, **kwargs):
