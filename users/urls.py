@@ -13,6 +13,8 @@ urlpatterns = [
     url(r'^logout/$', views.jump_ship, name='jump_ship'),
     # create project
     url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/create/$', views.create_project, name="create_project"),
+    # add task
+    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/add/$', views.create_task, name="add_task"),
     # user delete view
     url(r'^user/(?P<username>[A-Z0-9][0-9]{7})/delete/(?P<d>[A-Z0-9][0-9]{7})/$', views.delete_admin, name="delete_admin"),
     # list of users

@@ -154,6 +154,19 @@ class ActionList(models.Model):
         db_table = 'ActionList'
 
 
+class MemberUser(User, PermissionsMixin):
+    role = models.ForeignKey(Role, models.DO_NOTHING)
+    project = models.ForeignKey(Project, models.DO_NOTHING)
+    # tasks = models.ManyToManyField(Task)
+    is_member = True
+
+    class Meta:
+        db_table = 'Member'
+        permissions = (
+            ('can_create_member', 'Can create Team Member'),
+        )
+
+
 def get_path(instance, filename):
     p = instance.action_list.project.path
     print(p)
@@ -169,7 +182,7 @@ def get_student_list(project):
     students.append(l)
     for s in students:
         print(str(s.username) + ' -- ' + str(type(s)))
-    return students
+    return [s.username for s in students]
 
 
 class Task(models.Model):
@@ -189,16 +202,17 @@ class Task(models.Model):
         ('Not Submitted', 'Not Submitted')
     )
     status = models.CharField(choices=TASK_STATUS_CHOICES, max_length=14, default=2, blank=False)
-    est_start = models.DateTimeField()
+    start_date = models.DateTimeField(auto_now=True)
     est_end = models.DateTimeField(null=True, blank=True)
-    actual_start = models.DateTimeField(null=True, blank=True)
     actual_end = models.DateTimeField(null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     link = models.URLField(null=True, blank=True)
     title = models.CharField(max_length=50, null=True, blank=True)
     action_list = models.ForeignKey(ActionList, models.CASCADE, null=True, blank=True)
     deliverable = models.FileField(upload_to=get_path, blank=True, null=True)
-    users = models.ManyToManyField(User)
+    to_leader = models.NullBooleanField(verbose_name="Is the leader working on this Task?", null=True)
+    users = models.CharField(blank=False, null=True, max_length=10)
+    members = models.ManyToManyField(MemberUser)
 
     def __str__(self):
         return self.title
@@ -220,18 +234,6 @@ class ActivityLog(models.Model):
     class Meta:
         db_table = 'ActivityLog'
 
-
-class MemberUser(User, PermissionsMixin):
-    role = models.ForeignKey(Role, models.DO_NOTHING)
-    project = models.ForeignKey(Project, models.DO_NOTHING)
-    tasks = models.ManyToManyField(Task)
-    is_member = True
-
-    class Meta:
-        db_table = 'Member'
-        permissions = (
-            ('can_create_member', 'Can create Team Member'),
-        )
 
 # @receiver(post_save, sender=MemberUser)
 # def add_member_to_group(sender, instance, created, **kwargs):

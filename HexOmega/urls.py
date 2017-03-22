@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.i18n import javascript_catalog
 
 from ajax_select import urls as ajax_select_urls
 
@@ -25,6 +26,7 @@ import log.urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'admin/jsi18n/', javascript_catalog),
     url(r'', include(users.urls)),
     url(r'ajax_select/', include(ajax_select_urls)),
     url(r'^log/', include(log.urls)),

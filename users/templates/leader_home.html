@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.get_full_name }} | Home</title>
+</head>
+<body style="padding: 20% 5%; ">
+
+{% load static %}
+{% load bootstrap3 %}
+
+{% if not user.project %}
+    {% buttons %}
+    <a href="{% url 'create_project' user.username %}">
+    <button type="submit" class="btn btn-primary">
+        {% bootstrap_icon "star" %} Create Project
+    </button>
+    {% endbuttons %}
+    </a>
+{% else %}
+    {% for task in tasks %}
+        <li><a href="#">{{ task.title }} - {{ task.est_end|date }}</a></li>
+    {% endfor %}
+
+    {% buttons %}
+    <a href="{% url 'add_task' user.username %}">
+    <button type="submit" class="btn btn-primary">
+        {% bootstrap_icon "star" %} Add Tasks
+    </button>
+    {% endbuttons %}
+{% endif %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</body>
+</html>
