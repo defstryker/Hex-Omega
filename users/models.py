@@ -213,7 +213,7 @@ class Task(models.Model):
     actual_end = models.DateTimeField(null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     link = models.URLField(null=True, blank=True)
-    title = models.CharField(max_length=50, null=True, blank=True)
+    title = models.CharField(max_length=50, unique=True, blank=True)
     action_list = models.ForeignKey(ActionList, models.CASCADE, null=True, blank=True)
     deliverable = models.FileField(upload_to=get_path, blank=True, null=True)
     to_leader = models.NullBooleanField(verbose_name="Is the leader working on this Task?", null=True)

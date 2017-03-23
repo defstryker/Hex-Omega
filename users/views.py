@@ -1,8 +1,10 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.views.generic.edit import UpdateView
 
 from django.contrib.auth.models import Group
 
@@ -197,7 +199,6 @@ def create_task(request, username):
                                     action_list=l.project.actionlist)
             t.save()
             for m in mem_dat:
-                # print(m)
                 t.members.add(m)
             t.save()
             return redirect('leader_home', username)
@@ -209,35 +210,17 @@ def create_task(request, username):
     return render(request, 'crtask.html', {'form': form})
 
 
-@login_required
-def leader_update_task(request, username, p):
-    l = LeaderUser.objects.get(username__exact=username)
-    if request.method == 'POST':
-        form = LeaderUpdateTaskForm(request.POST, request.FILES)
-        if form.is_valid():
-            mem_dat = form.cleaned_data.get('members')
-            title = form.cleaned_data.get('title')
-            est_end = form.cleaned_data.get('est_end')
-            status = form.cleaned_data.get('status')
-            lt = form.cleaned_data.get('to_leader')
-            if lt is None:
-                lt = False
-            # fix tis. Buggy now.
-            t, created = Task.objects.get_or_create(title=title, est_end=est_end, status=status, to_leader=lt,
-                                                    action_list=l.project.actionlist)
-            t.save()
-            for m in mem_dat:
-                # print(m)
-                t.members.add(m)
-            t.save()
-            file = request.FILES.get('deliverable')
-            uploaded_file_handler(file, get_project_path(l.project))
+class TaskUpdate(UpdateView, LoginRequiredMixin):
+    username = ''
+    model = Task
+    template_name = 'crtask.html'
+    content_type = 'multipart-form-data'
+    form_class = LeaderUpdateTaskForm
 
-            return redirect('leader_home', username)
-        else:
-            print(form.errors)
-    else:
-        form = LeaderUpdateTaskForm({'pn': l.project.name})
-
-    return render(request, 'crtask.html', {'form': form})
-    pass
+    def get_form_kwargs(self):
+        p = self.request.get_full_path()
+        self.success_url = '/'.join(p.split('/')[:-3]) + '/'
+        print(self.success_url)
+        kwargs = super(TaskUpdate, self).get_form_kwargs()
+        kwargs['pn'] = LeaderUser.objects.get(username__exact=self.request.user.username).project.name
+        return kwargs
