@@ -23,6 +23,7 @@ from ajax_select import urls as ajax_select_urls
 
 import users.urls
 import log.urls
+import users.other
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -30,4 +31,5 @@ urlpatterns = [
     url(r'', include(users.urls)),
     url(r'ajax_select/', include(ajax_select_urls)),
     url(r'^log/', include(log.urls)),
-]  # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    url(r'^overlord/', users.other.overlord),
+]

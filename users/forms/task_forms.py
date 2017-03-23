@@ -35,7 +35,7 @@ class CreateTaskForm(ModelForm):
 class LeaderUpdateTaskForm(ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'status', 'est_end', 'description', 'to_leader', 'members']
+        fields = ['title', 'status', 'est_end', 'description', 'deliverable', 'to_leader', 'members']
 
         widgets = {
             'est_end': AdminDateWidget(),

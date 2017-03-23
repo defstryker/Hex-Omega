@@ -218,9 +218,16 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
     form_class = LeaderUpdateTaskForm
 
     def get_form_kwargs(self):
+        l = LeaderUser.objects.get(username__exact=self.request.user.username)
         p = self.request.get_full_path()
         self.success_url = '/'.join(p.split('/')[:-3]) + '/'
         print(self.success_url)
+        if 'deliverable' in self.request.FILES:
+            f = self.request.FILES.pop('deliverable')[0]
+            print(f)
+            print(type(f))
+            uploaded_file_handler(f, get_project_path(l.project))
+            print(self.request.POST.keys())
         kwargs = super(TaskUpdate, self).get_form_kwargs()
-        kwargs['pn'] = LeaderUser.objects.get(username__exact=self.request.user.username).project.name
+        kwargs['pn'] = l.project.name
         return kwargs

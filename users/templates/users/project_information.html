@@ -5,37 +5,48 @@
 {% block usernavi_content %}	
     {%include "users/includes/usernavicontents_admin.html" %}
 {% endblock %}
+
 {% block main_content %}
+	
 	{% csrf_token %}
-    <div class="header">
-        <h4 class="title">{{ adminuser.get_full_name }}'s Information</h4>
+	
+	  <div class="header">
+        <h4 class="title">{{ project.name}}'s Information</h4>
     </div>
 	
-    <div class="col-md-6">
+	   <div class="col-md-6">
         <div class="content table-responsive table-full-width" >
 
             <table class="table table-hover table-striped" id="tabledetails">
                                     
                 <tbody>
                 <tr>
-                    <td class="col-xs-3">User Name</td>
-                    <td>{{ adminuser.username }}</td>
+                    <td class="col-xs-3">Project Name</td>
+                    <td>{{ project.name }}</td>
                 </tr>
                 <tr>
-                    <td>First Name</td>
+                    <td>Start Date</td>
                     <td>{{ adminuser.first_name }}</td>
                 </tr>
                 <tr>
-                    <td>Last Name</td>
+                    <td>End Date</td>
                     <td>{{ adminuser.last_name }}</td>
                 </tr>
                 <tr>
-                    <td>Email</td>
-                    <td>{{ adminuser.email }}</td>
+                    <td>Status</td>
+                    <td>{{ project.status }}</td>
                 </tr>
                 <tr>
-                    <td>Biography</td>
-                    <td>{{ adminuser.bio }}</td>
+                    <td>Description</td>
+                    <td>{{ project.description }}</td>
+                </tr>
+				<tr>
+                    <td>Leader</td>
+                    <td>{{ project.leader }}</td>
+                </tr>
+				<tr>
+                    <td>Admin</td>
+                    <td>{{ project.admins }}</td>
                 </tr>
                 </tbody>
             </table>
