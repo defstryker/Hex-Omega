@@ -45,9 +45,37 @@ class LeaderUpdateTaskForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         pn = kwargs.pop('pn')
+        up_flag = kwargs.pop('up_flag')
+        up_name = kwargs.pop('up_name')
         qs = MemberUser.objects.filter(project__name=pn)
         c = [(m.id, m.get_full_name()) for m in qs]
         super(LeaderUpdateTaskForm, self).__init__(*args, **kwargs)
         self.fields['members'].choices = c
-        # self.fields['members'].queryset = qs
+        if up_flag:
+            self.fields.pop('deliverable')
+            self.fields['Deliverable'] = forms.CharField(max_length=50, required=False)
+            self.fields['Deliverable'].initial = "Deliverable [{}] already uploaded.".format(up_name)
+            self.fields['Deliverable'].widget.attrs['readonly'] = True
 
+            self.fields['title'].widget.attrs['readonly'] = True
+
+            self.initial['status'] = 'Completed'
+            self.fields['status'] = forms.CharField(max_length=50, required=False)
+            self.fields['status'].widget.attrs['readonly'] = True
+
+            self.fields['est_end'] = forms.CharField(max_length=50, required=False)
+            self.fields['est_end'].widget.attrs['readonly'] = True
+
+            self.fields['description'] = forms.CharField(max_length=50, required=False)
+            self.fields['description'].widget.attrs['readonly'] = True
+
+            self.fields['to_leader'] = forms.CharField(max_length=50, required=False)
+            self.fields['to_leader'].widget.attrs['readonly'] = True
+
+            self.fields['members'] = forms.CharField(max_length=50, required=False)
+            names = ''
+            for m in self.initial['members']:
+                names += m.get_full_name()
+                names += ', '
+            self.initial['members'] = names[:-2]
+            self.fields['members'].widget.attrs['readonly'] = True

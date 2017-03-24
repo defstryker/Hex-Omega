@@ -146,8 +146,9 @@ def leader_home(request, username):
     user = LeaderUser.objects.get(username__exact=username)
     try:
         tasks = user.project.actionlist.task_set.all()
-    # for task in Task.objects.all():
-    #     print(task.title, task.action_list.project.name)
+        for task in Task.objects.all():
+            print(task.title, task.action_list.project.name)
+            # print(task.deliverable.url)
     except Exception as e:
         print('Ahhhhhh')
         tasks = None
@@ -219,15 +220,17 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
 
     def get_form_kwargs(self):
         l = LeaderUser.objects.get(username__exact=self.request.user.username)
+        t = Task.objects.get(pk=self.kwargs['pk'])
+        up_flag = False
+        up_name = ''
+        if bool(t.deliverable):
+            up_flag = True
+            up_name = t.deliverable.name.split('/')[-1]
+            print(t.deliverable.name.split('/')[-1])
         p = self.request.get_full_path()
         self.success_url = '/'.join(p.split('/')[:-3]) + '/'
-        print(self.success_url)
-        if 'deliverable' in self.request.FILES:
-            f = self.request.FILES.pop('deliverable')[0]
-            print(f)
-            print(type(f))
-            uploaded_file_handler(f, get_project_path(l.project))
-            print(self.request.POST.keys())
         kwargs = super(TaskUpdate, self).get_form_kwargs()
         kwargs['pn'] = l.project.name
+        kwargs['up_flag'] = up_flag
+        kwargs['up_name'] = up_name
         return kwargs
