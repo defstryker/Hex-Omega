@@ -39,7 +39,6 @@ class LeaderUpdateTaskForm(ModelForm):
 
         widgets = {
             'est_end': AdminDateWidget(),
-            # 'members': FilteredSelectMultiple(is_stacked=False, verbose_name='Members')
             'members': forms.CheckboxSelectMultiple()
         }
 
@@ -51,6 +50,7 @@ class LeaderUpdateTaskForm(ModelForm):
         c = [(m.id, m.get_full_name()) for m in qs]
         super(LeaderUpdateTaskForm, self).__init__(*args, **kwargs)
         self.fields['members'].choices = c
+        self.fields['members'].widget.attrs['required'] = False
         if up_flag:
             self.fields.pop('deliverable')
             self.fields['Deliverable'] = forms.CharField(max_length=50, required=False)

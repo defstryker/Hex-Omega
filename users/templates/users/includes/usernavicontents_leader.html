@@ -8,8 +8,8 @@
 									</p>
                               </a>
                               <ul class="dropdown-menu">
-                                <li><a href="{% url 'detail_admin' user.username %}">Detail</a></li>
-                                    
+                                <li><a href="{% url 'leader_home' user.username %}">My details</a></li>
+                                <li><a href="{% url 'update_leader' user.username %}">Update my profile</a></li>
                               </ul>
                         </li>
 						<li>
@@ -18,7 +18,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="{% url 'add_task' user.username %}">
                                 <p>Add Tasks</p>
                             </a>
                         </li>

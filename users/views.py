@@ -1,10 +1,13 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 
 from django.contrib.auth.models import Group
 
@@ -78,14 +81,15 @@ def logged_in(request, username):
     if AdminUser.objects.filter(username__exact=username).count() == 1:
         return redirect('display_admin', username)
     elif LeaderUser.objects.filter(username__exact=username).count() == 1:
-        return redirect('leader_home', username)
+        return redirect('display_leader', username)
     else:
         user = MemberUser.objects.get(username__exact=username)
+        return redirect('member_home', username)
 
-    return render(request,
-                  'users-prev/admin_logged_in.html',
-                  {'li': True,
-                   'user': user})
+    # return render(request,
+    #               'users-prev/admin_logged_in.html',
+    #               {'li': True,
+    #                'user': user})
 
 
 @login_required
@@ -146,13 +150,62 @@ def leader_home(request, username):
     user = LeaderUser.objects.get(username__exact=username)
     try:
         tasks = user.project.actionlist.task_set.all()
-        for task in Task.objects.all():
+        for task in Task.objects.filter(action_list__project__leader__username=username):
             print(task.title, task.action_list.project.name)
             # print(task.deliverable.url)
     except Exception as e:
         print('Ahhhhhh')
         tasks = None
     return render(request, 'leader_home.html', {'user': user, 'tasks': tasks})
+
+
+# @login_required
+# def create_member(request, username):
+#     pass
+class CreateMember(CreateView, LoginRequiredMixin):
+    fields = ['username', 'first_name', 'last_name', 'role', 'email', 'phone']
+    username = ''
+    model = MemberUser
+    l = None
+    template_name = 'create_member.html'
+
+    def form_valid(self, form):
+        form.instance.project = self.l.project
+        password = get_default_password()
+        form.instance.set_password(password)
+        mail_kickoff(form.instance, password)
+        messages.add_message(self.request, messages.INFO, 'Hello world.')
+        update_session_auth_hash(self.request, self.request.user)
+        return super(CreateMember, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        self.l = LeaderUser.objects.get(username__exact=self.request.user.username)
+        p = self.request.get_full_path()
+        print(p)
+        self.success_url = '/'.join(p.split('/')[:-1]) + '/'
+        kwargs = super(CreateMember, self).get_form_kwargs()
+        # kwargs['pn'] = l.project.name
+        return kwargs
+
+
+class MemberHome(DetailView, LoginRequiredMixin):
+    model = MemberUser
+    username = ''
+    template_name = 'member_home.html'
+
+    def get_object(self, queryset=None):
+        return MemberUser.objects.get(username=self.kwargs.get('username'))
+
+    def get_context_data(self, **kwargs):
+        context = super(MemberHome, self).get_context_data(**kwargs)
+        return context
+
+
+@login_required
+def show_tasks(request, username):
+    ts = Task.objects.filter(members__username=username)
+    print(ts)
+    return render(request, 'list.html', {'tasks': ts})
 
 
 # summer-paper-4342
@@ -226,7 +279,8 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
         if bool(t.deliverable):
             up_flag = True
             up_name = t.deliverable.name.split('/')[-1]
-            print(t.deliverable.name.split('/')[-1])
+            t.status = 'Completed'
+            t.save()
         p = self.request.get_full_path()
         self.success_url = '/'.join(p.split('/')[:-3]) + '/'
         kwargs = super(TaskUpdate, self).get_form_kwargs()
