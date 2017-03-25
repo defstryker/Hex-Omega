@@ -63,21 +63,20 @@
         </nav>
 
 
-<div class="content">
-<div class="container-fluid">
-<div class="row">
+        <div class="content">
+            <div class="container-fluid">
+            <div class="row">
 
-<div class="col-md-12">
-<div class="card">
-<div style=" color:black;">
-
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}"/>
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/base.css" %}" />
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/widgets.css" %}"/>
-{% url 'admin:jsi18n' as jsi18nurl %}
-<script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
-<fieldset style="padding: 5% 27%;">
-    <h2 style="color: white; text-align: center">Add a Task</h2>
+			<div class="col-md-12">
+            <div class="card">
+			<div style=" color:black;">
+			
+			       <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}"/>
+                   <link rel="stylesheet" type="text/css" href="{% static "admin/css/base.css" %}/>
+                   <link rel="stylesheet" type="text/css" href="{% static "admin/css/widgets.css" %}/>
+				   {% url 'admin:jsi18n' as jsi18nurl %}
+                   <script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+				   <fieldset>
     <div class="form-row">
         <form action="" method="POST" class="form" enctype="multipart/form-data">
             {% csrf_token %}

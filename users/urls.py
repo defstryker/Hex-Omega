@@ -1,9 +1,10 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 
 from . import views
 from .Claudia import views as cv
 from .Xav import views as xv
 
+from log.views import test
 urlpatterns = [
     # index page
     url(r'^$', views.index, name="index"),
@@ -62,6 +63,8 @@ urlpatterns = [
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/add_leader/$", xv.create_leader_user, name='add_leader'),
     url(r"^leader_user/(?P<username>[A-Z0-9][0-9]{7})/details/$", xv.display_leader_detail, name='display_leader'),
     url(r"^leader_user/(?P<username>[A-Z0-9][0-9]{7})/update/$", xv.update_leader_detail, name='update_leader'),
-    # ----- Other
+    # ----- Logs & Other
     # url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/list/$', views.get_list_of_users, name='list_of_users'),
+    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z]+)/log/$', test, name='leader_log'),
+    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z]+)/log/$', test, name='admin_log'),
 ]

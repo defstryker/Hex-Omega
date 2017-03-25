@@ -10,7 +10,7 @@
 	
 	{% csrf_token %}
 	
-	  <div class="header">
+	<div class="header">
         <h4 class="title">{{ project.name}}'s Information</h4>
     </div>
 	
@@ -26,11 +26,11 @@
                 </tr>
                 <tr>
                     <td>Start Date</td>
-                    <td>{{ project.start_date|date }}</td>
+                    <td>{{ adminuser.first_name }}</td>
                 </tr>
                 <tr>
                     <td>End Date</td>
-                    <td>{{ project.end_date|date }}</td>
+                    <td>{{ adminuser.last_name }}</td>
                 </tr>
                 <tr>
                     <td>Status</td>
@@ -46,11 +46,7 @@
                 </tr>
 				<tr>
                     <td>Admin</td>
-                    <td>
-                        {% for admin in project.admins.all %}
-                            {{ admin.get_full_name }}<br>
-                        {% endfor %}
-                    </td>
+                    <td>{{ project.admins }}</td>
                 </tr>
                 </tbody>
             </table>

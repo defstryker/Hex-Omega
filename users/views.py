@@ -21,6 +21,8 @@ from .forms.task_forms import CreateTaskForm, LeaderUpdateTaskForm
 
 from .Xav.user_context import url_context
 
+from log.Log import log
+
 import os
 
 """
@@ -85,11 +87,6 @@ def logged_in(request, username):
     else:
         user = MemberUser.objects.get(username__exact=username)
         return redirect('member_home', username)
-
-    # return render(request,
-    #               'users-prev/admin_logged_in.html',
-    #               {'li': True,
-    #                'user': user})
 
 
 @login_required
@@ -167,13 +164,15 @@ class CreateMember(CreateView, LoginRequiredMixin):
     username = ''
     model = MemberUser
     l = None
-    template_name = 'create_member.html'
+    template_name = 'hmm/create_member.html'
 
     def form_valid(self, form):
         form.instance.project = self.l.project
         password = get_default_password()
         form.instance.set_password(password)
         mail_kickoff(form.instance, password)
+        log('INFO', self.request.user,
+            'Created user: {}[{}]'.format(form.instance.get_full_name(), form.instance.username))
         messages.add_message(self.request, messages.INFO, 'Hello world.')
         update_session_auth_hash(self.request, self.request.user)
         return super(CreateMember, self).form_valid(form)
@@ -199,6 +198,17 @@ class MemberHome(DetailView, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         context = super(MemberHome, self).get_context_data(**kwargs)
         return context
+
+
+class UpdateMember(UpdateView, LoginRequiredMixin):
+    fields = ['first_name', 'last_name', 'role', 'email', 'phone']
+    username = ''
+    model = MemberUser
+    template_name = 'hmm/create_member.html'
+
+    def form_valid(self, form):
+        update_session_auth_hash(self.request, form.instance)
+        super(UpdateMember, self).form_valid(form)
 
 
 @login_required
@@ -256,6 +266,7 @@ def create_task(request, username):
             for m in mem_dat:
                 t.members.add(m)
             t.save()
+            log('SUCCESS', l, 'Created a new task: {}'.format(t.title))
             return redirect('leader_home', username)
         else:
             print(form.errors)
@@ -271,6 +282,10 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
     template_name = 'crtask.html'
     content_type = 'multipart-form-data'
     form_class = LeaderUpdateTaskForm
+
+    def form_valid(self, form):
+        log('INFO', self.request.user, 'Task: [{}] has been updated'.format(form.instance.title))
+        super(TaskUpdate, self).form_valid(form)
 
     def get_form_kwargs(self):
         l = LeaderUser.objects.get(username__exact=self.request.user.username)
