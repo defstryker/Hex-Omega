@@ -24,7 +24,13 @@
                      <td><a href="{% url 'project_detail' request.user.username proj.name %}">{{ proj.name }}</a></td>
                      <td>{{ proj.start_date }}</td>
                      <td>{{ proj.end_date }}</td>
-                     <td>{{ proj.status }}</td>
+                     <td>
+                         {% if proj.status != 0 %}
+                            Open
+                         {% else %}
+                             Closed
+                         {% endif %}
+                     </td>
                  </tr>
              {% endfor %}
              </tbody>

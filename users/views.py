@@ -226,6 +226,7 @@ def create_project(request, username):
         if form.is_valid():
             p = form.save(commit=False)
             p.leader = LeaderUser.objects.get(username__exact=username)
+            p.status = 1
             p.save()
             path = get_project_path(p)
             os.makedirs(path, 0o755)

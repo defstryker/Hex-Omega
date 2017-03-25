@@ -26,11 +26,11 @@
                 </tr>
                 <tr>
                     <td>Start Date</td>
-                    <td>{{ adminuser.first_name }}</td>
+                    <td>{{ project.start_date|date }}</td>
                 </tr>
                 <tr>
                     <td>End Date</td>
-                    <td>{{ adminuser.last_name }}</td>
+                    <td>{{ project.end_date|date }}</td>
                 </tr>
                 <tr>
                     <td>Status</td>
@@ -46,7 +46,11 @@
                 </tr>
 				<tr>
                     <td>Admin</td>
-                    <td>{{ project.admins }}</td>
+                    <td>
+                        {% for admin in project.admins.all %}
+                            {{ admin.get_full_name }}<br>
+                        {% endfor %}
+                    </td>
                 </tr>
                 </tbody>
             </table>
