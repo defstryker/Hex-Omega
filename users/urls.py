@@ -52,5 +52,5 @@ urlpatterns = [
     url(r"^leader_user/(?P<username>[A-Z0-9][0-9]{7})/details/$", xv.display_leader_detail, name='display_leader'),
     url(r"^leader_user/(?P<username>[A-Z0-9][0-9]{7})/update/$", xv.update_leader_detail, name='update_leader'),
     # ----- Other
-    url(r'^user/list/$', views.get_list_of_users, name='list_of_users'),
+    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/list/$', views.get_list_of_users, name='list_of_users'),
 ]
