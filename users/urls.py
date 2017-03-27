@@ -27,6 +27,8 @@ urlpatterns = [
     # members update themselves
     url(r'^member_user/(?P<username>[A-Z0-9][0-9]{7})/update-member/$', views.update_member, name="update_member"),
 
+    
+
     # user delete view
     url(r'^user/(?P<username>[A-Z0-9][0-9]{7})/delete/(?P<d>[A-Z0-9][0-9]{7})/$', views.delete_admin,
         name="delete_admin"),
@@ -45,6 +47,10 @@ urlpatterns = [
     url(r'^member_user/(?P<username>[A-Z0-9][0-9]{7})/tasks$', views.show_tasks, name="task_list"),
     # user dispatch
     url(r'^user/(?P<username>[A-Z0-9][0-9]{7})/$', views.logged_in, name="user_logged_in"),
+
+    #upload deliverable
+    url(r'^member_user/(?P<username>[A-Z0-9][0-9]{7})/tasks/(?P<task>[A-Za-z]+)/$', views.member_upload,
+        name='member_upload'),
 
     # ----- Claudia
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/add_admin/$", cv.create_admin_user, name='add_admin'),
@@ -86,5 +92,8 @@ urlpatterns = [
 
     url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<p>[a-zA-Z0-9_]{1,10})/project_detail/(?P<task>[a-zA-Z0-9_]+)$',
         views.send_file, name='download_deliverable')
+    
+
+    
 
 ]

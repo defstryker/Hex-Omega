@@ -1,19 +1,12 @@
 {%extends "users/base.html" %}
 {% load bootstrap3 %}
  {% block navi_content %}
-     {% if user.is_leader %}
-		   {%include "users/includes/navicontents_leader.html" %}
-     {% else %}
-         {%include "users/includes/navicontents_member.html" %}
-     {% endif %}
-
+		        {%include "users/includes/navicontents_leader.html" %}
+    
 {% endblock %}
 {% block usernavi_content %}
-    {% if user.is_leader %}
 		  {% include "users/includes/usernavicontents_leader.html" %}
-    {% else %}
-        {% include "users/includes/usernavicontents_member.html" %}
-    {% endif %}
+    
 {% endblock %}
 
 {% block main_content %}

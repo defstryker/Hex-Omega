@@ -96,7 +96,7 @@ def setup():
     t.to_leader = True
     t.save()
 
-    start_schedule_thread()
+    #start_schedule_thread()
     # tasks_email_schedule()
 
 

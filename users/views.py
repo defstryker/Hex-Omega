@@ -107,6 +107,18 @@ def delete_admin(request, username, d):
 
 
 @login_required
+def member_upload(request, username, task):
+    t = Task.objects.get(title=task)
+    if 'up_file' in request.FILES:
+        t.deliverable = request.FILES['up_file']
+        t.save()
+        print(t.deliverable.url)
+    else:
+        print('No file!!')
+    return redirect('task_list', username)
+
+
+@login_required
 def list_users(request, username):
     return render(request, 'list.html', {'admins': AdminUser.objects.all()})
 
@@ -326,7 +338,7 @@ def update_member(request, username):
     else:
         form = MemberUpdate()
 
-    return render(request, 'create_member.html', {
+    return render(request, 'update_member.html', {
         'form': form,
         'user': mem
     })
@@ -386,7 +398,8 @@ def send_file(request, username, p, task):
     file_path = '/' + task.deliverable.url
     print(file_path)
     file_mimetype = mimetypes.guess_type(file_path)
-    response = HttpResponse(content_type=file_mimetype)
-    response['X-Sendfile'] = file_path
-    response['Content-Disposition'] = 'attachment; filename={}'.format(task.deliverable.name.split('/')[-1])
-    return response
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type=file_mimetype)
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            return response

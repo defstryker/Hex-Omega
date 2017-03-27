@@ -17,8 +17,8 @@
              <th>First Name</th>
              <th>Last Name</th>
              <th>Email Address</th>
-             <th style="text-align:center">Edit</th>
-             <th style="text-align:center" >Delete</th>
+			 <th>Role</th>
+             
                                         
              </thead>
              <tbody>
@@ -29,18 +29,7 @@
                      <td>{{ users.first_name }}</td>
                      <td>{{ users.last_name }}</td>
                      <td>{{ users.email }}</td>
-                     <td style="text-align:center">
-                         <a href="#">
-                             <div class="font-icon-detail"><i class="pe-7s-note"></i>
-                             </div>
-                         </a>
-                     </td>
-                     <td style="text-align:center">
-                         <a href="{% url 'delete_member' request.user.username users.username %}">
-                             <div class="font-icon-detail"><i class="pe-7s-trash"></i>
-                             </div>
-                         </a>
-                     </td>
+                     <td>{{users.role.title}}</td>
                                             
                  </tr>
              {% endfor %}
