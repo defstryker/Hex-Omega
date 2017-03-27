@@ -48,7 +48,9 @@ def tasks_email_schedule():
         for task in project.actionlist.task_set.all():
             if task.est_end.date() - timedelta(days=1) == datetime.now().date():
                 if task.status is not 'Completed' and task.status is not 'Unassigned':
-                    l = [member.email for member in task.users.all() if member.email is not '']
+                    l = [member.email for member in task.members.all() if member.email is not '']
+                    if task.to_leader:
+                        l.append(task.action_list.project.leader.email)
                     sub = task.action_list.project.name + ' : ' + task.title
                     msg = 'This is an automated reminder to submit your deliverable before tomorrow.\n\n'
                     msg += 'Please do not reply to this mail.'
@@ -57,7 +59,7 @@ def tasks_email_schedule():
                     lp.append(t)
 
         if len(lp) is not 0:
-            # mail_kickoff(lp, var=2)
+            mail_kickoff(lp, var=2)
             print(lp)
 
 

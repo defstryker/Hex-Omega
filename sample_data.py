@@ -10,13 +10,20 @@ def setup():
     r = Role()
     r.title = 'Security Coordinator'
     r.save()
+    r1 = Role(title='Software Coordinator')
+    r1.save()
+    r2 = Role(title='Secretary')
+    r2.save()
+    r3 = Role(title='Librarian')
+    r3.save()
+    r4 = Role(title='Others')
 
     # Create admin
     adm = AdminUser(username='G2503472', first_name='admin', last_name='man')
     adm.email = 'admin_man@example.com'
     adm.set_password('qwerty123')
     adm.save()
-	
+
     adm1 = AdminUser(username='G1234567', first_name='test', last_name='man')
     adm1.email = 'test_man@example.com'
     adm1.set_password('qwerty123')
@@ -32,8 +39,8 @@ def setup():
     l.email = 'leader_man@example.com'
     l.set_password('qwerty123')
     l.save()
-	
-	 # Create leader
+
+    # Create leader
     l1 = LeaderUser(username='12345678', first_name='leader', last_name='first')
     l1.email = 'firstleader@example.com'
     l1.set_password('qwerty123')
@@ -47,12 +54,11 @@ def setup():
     p.save()
     p.admins.add(adm)
     p.save()
-	
-	
-	 # Create project
-    p1 = Project(name='PMT01')
+
+    # Create project
+    p1 = Project(name='MUPP')
     p1.start_date = datetime.now()
-    p1.end_date = datetime.now() + timedelta(days=30)
+    p1.end_date = datetime.now() + timedelta(days=45)
     p1.leader_id = l1.id
     p1.save()
     p1.admins.add(adm)
@@ -61,7 +67,7 @@ def setup():
     # Create member
     m = MemberUser(username='56475644', first_name='Heracles', last_name='Alcmene')
     m.set_password('qwerty123')
-    m.email = 'heracles@example.com'
+    m.email = 'avsv96@gmail.com'
     m.role_id = r.id
     m.project_id = p.id
     m.save()
@@ -77,7 +83,7 @@ def setup():
     o.set_password('qwerty123')
     o.email = 'apollo@example.com'
     o.role_id = r.id
-    o.project_id = p.id
+    o.project_id = p1.id
     o.save()
 
     t = Task(status='Assigned', start_date=datetime.now() - timedelta(days=1),
@@ -87,11 +93,10 @@ def setup():
     t.save()
     t.members.add(m)
     t.members.add(n)
-    t.members.add(o)
     t.to_leader = True
     t.save()
 
-    #start_schedule_thread()
+    start_schedule_thread()
     # tasks_email_schedule()
 
 
