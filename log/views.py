@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
 
-from users.models import Project
+from users.models import Project, AdminUser, LeaderUser
 
 from .parse_to_html import parse_log
 from yattag import Doc
@@ -15,6 +15,12 @@ def test(request, username, project):
         print('------->>' + project + '<<---------')
         return HttpResponse("No project created yet. Please create a project first.")
 
+    user = ''
+    if AdminUser.objects.filter(username__exact=username).count() is 1:
+    	user = AdminUser.objects.get(username__exact=username)
+    else:
+    	user = LeaderUser.objects.get(username__exact=username)
+
     doc, tag, text = Doc().tagtext()
     with tag('h3', id='main-title'):
         text(project)
@@ -24,5 +30,6 @@ def test(request, username, project):
                   {'log_data': p.test(),
                    'project_title': doc.getvalue(),
                    'title': proj.name,
-                   'section': 'Log'
+                   'section': 'Log',
+                   'user': user
                    })
