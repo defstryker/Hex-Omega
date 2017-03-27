@@ -1,23 +1,15 @@
 {%extends "users/base.html" %}
  {% block navi_content %}
-		{% ifequal user.groups.all.0 'admin_group' %}
-		{%include "users/includes/navicontents_admin.html" %}
-    
-	  {% else %}
-		{%include "users/includes/navicontents_member.html" %}
-    {% endifequal %}
+
+		{%include "users/includes/navicontents_leader.html" %}
+   
+
 {% endblock %}
 {% block usernavi_content %}
 		
-       {% ifequal user.groups.all.0 'admin_group' %}
-		{%include "users/includes/usernavicontents_admin.html" %}
-    
-	{% else %}
-		{%include "users/includes/usernavicontents_member.html" %}
-    {% endifequal %}
+		{%include "users/includes/usernavicontents_leader.html" %}
 
 {% endblock %}
-
 {% block main_content %}
 
 	{% csrf_token %}

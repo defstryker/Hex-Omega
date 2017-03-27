@@ -79,15 +79,10 @@
 										</a>
 								{% else %}
 									{% for task in tasks %}
-										<li><a href="{% url 'leader_update_task' username=user.username pk=task.id %}">{{ task.title }} - {{ task.est_end|date }}</a></li>
+										<li style="list-style-type: none;"><h3>
+                                            <a style="color: white;" href="{% url 'leader_update_task' username=user.username pk=task.id %}">{{ task.title|pprint|linenumbers }} - {{ task.est_end|date }}</a>
+                                        </h3></li>
 									{% endfor %}
-
-									{% buttons %}
-											<a href="{% url 'add_task' user.username %}">
-												<button type="submit" class="btn btn-primary" style="margin-top: 30px;">
-												{% bootstrap_icon "star" %} Add Tasks
-												</button>
-									{% endbuttons %}
 								{% endif %}
 								<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
                                 <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">

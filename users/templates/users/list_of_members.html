@@ -1,14 +1,14 @@
 {%extends "users/base.html" %}
 {% block navi_content %}
-    {%include "users/includes/navicontents_admin.html" %}
+    {%include "users/includes/navicontents_leader.html" %}
 {% endblock %}
 {% block usernavi_content %}
-    {%include "users/includes/usernavicontents_admin.html" %}
+    {%include "users/includes/usernavicontents_leader.html" %}
 {% endblock %}
-
 {% block main_content %}
+<h4>List of Members</h4>
  <div class="content table-responsive table-full-width" >
-     <h4>List of Members</h4>
+     
      <table class="table table-hover table-striped" summary="member_user_list">
          {% if member_list %}
              <thead>
@@ -30,13 +30,13 @@
                      <td>{{ users.last_name }}</td>
                      <td>{{ users.email }}</td>
                      <td style="text-align:center">
-                         <a href="{% url 'update_member' request.user.username users.username %}">
+                         <a href="#">
                              <div class="font-icon-detail"><i class="pe-7s-note"></i>
                              </div>
                          </a>
                      </td>
                      <td style="text-align:center">
-                         <a href="{% url 'delete_user' request.user.username users.username %}">
+                         <a href="{% url 'delete_member' request.user.username users.username %}">
                              <div class="font-icon-detail"><i class="pe-7s-trash"></i>
                              </div>
                          </a>

@@ -1,10 +1,9 @@
-from django.conf.urls import url, include
-
+from django.conf.urls import url
 from . import views
 from .Claudia import views as cv
 from .Xav import views as xv
-
 from log.views import test
+
 urlpatterns = [
     # index page
     url(r'^$', views.index, name="index"),
@@ -20,10 +19,14 @@ urlpatterns = [
     url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/edit/(?P<pk>[0-9]{1,3})/$',
         views.TaskUpdate.as_view(username=''),
         name="leader_update_task"),
-    # edit task
+    # create member
     url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/add-member/$',
         views.CreateMember.as_view(username=''),
         name="create_member"),
+
+    # members update themselves
+    url(r'^member_user/(?P<username>[A-Z0-9][0-9]{7})/update-member/$', views.update_member, name="update_member"),
+
     # user delete view
     url(r'^user/(?P<username>[A-Z0-9][0-9]{7})/delete/(?P<d>[A-Z0-9][0-9]{7})/$', views.delete_admin,
         name="delete_admin"),
@@ -47,6 +50,7 @@ urlpatterns = [
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/add_admin/$", cv.create_admin_user, name='add_admin'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/details/$", cv.get_admin_detail, name='display_admin'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/update/$", cv.update_admin_detail, name='update_admin'),
+    url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/search/$", cv.search_users, name='users_search'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/list/$", cv.get_list_of_users, name='list_of_users'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/update_user/(?P<user>[A-Z0-9][0-9]{7})/$", cv.user_update,
         name='update_user'),
@@ -57,14 +61,30 @@ urlpatterns = [
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/project/$", cv.display_all_projects, name='all_project'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/open_project/$", cv.display_open_projects, name='open_project'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<p>[a-zA-Z0-9_]{1,10})/project_detail/$",
-        cv.project_information, name='project_detail'),
+        views.project_information, name='project_detail'),
+    url(r"^member_user/(?P<username>[A-Z0-9][0-9]{7})/details/$", cv.get_member_detail, name='display_member'),
+    url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/delete_project/(?P<d>[a-zA-Z0-9_]{1,10})/$", cv.delete_project,
+        name='delete_project'),
+
     # ----- Xav
     # Creating a leader falls under the admin's role.
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/add_leader/$", xv.create_leader_user, name='add_leader'),
     url(r"^leader_user/(?P<username>[A-Z0-9][0-9]{7})/details/$", xv.display_leader_detail, name='display_leader'),
     url(r"^leader_user/(?P<username>[A-Z0-9][0-9]{7})/update/$", xv.update_leader_detail, name='update_leader'),
-    # ----- Logs & Other
-    # url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/list/$', views.get_list_of_users, name='list_of_users'),
-    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z]+)/log/$', test, name='leader_log'),
-    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z]+)/log/$', test, name='admin_log'),
+    # ----- Other
+    url(r'^user/list/$', views.get_list_of_users, name='list_of_users'),
+
+    # Log Update
+
+    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z0-9]*)/log/$', test, name='leader_log'),
+    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z0-9]*)/log/$', test, name='admin_log'),
+
+    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/list/$', views.get_list_of_members, name='members_list'),
+
+    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/delete/(?P<d>[A-Z0-9][0-9]{7})/$', views.delete_a_member,
+        name='delete_member'),
+
+    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<p>[a-zA-Z0-9_]{1,10})/project_detail/(?P<task>[a-zA-Z0-9_]+)$',
+        views.send_file, name='download_deliverable')
+
 ]

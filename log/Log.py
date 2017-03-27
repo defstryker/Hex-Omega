@@ -43,8 +43,7 @@ def log(level, user, content, **kwargs):
         raise ValueError('Empty path to log file.')
     else:
         f = open(logfile, 'a')
-        print('[{}] [{}] [{}] [{}] [{}] [{}]'.format(level, user.username, access_level, user.project.name, data,
-                                                     content),
+        print('[{}] [{}] [{}] [{}] [{}] [{}]'.format(level, user.username, access_level, user.project.name, data, content),
               file=f)
         f.flush()
         f.close()

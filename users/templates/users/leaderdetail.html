@@ -21,7 +21,7 @@
 {% block main_content %}
 	{% csrf_token %}
 	<div class="header">
-        <h4 class="title">{{ leaderuser.get_full_name }}'s Information</h4>
+        <h4 class="title">{{ user.get_full_name }}'s Information</h4>
     </div>
 						
 	                        <div class="col-md-6">
@@ -32,27 +32,27 @@
                                     <tbody>
                                         <tr> 
                                             <td class="col-xs-3">User Name</td>
-                                            <td>{{ leaderuser.username }}</td> 
+                                            <td>{{ user.username }}</td> 
                                         </tr>
                                         <tr> 
                                             <td>First Name</td>
-                                            <td>{{ leaderuser.first_name }}</td> 
+                                            <td>{{ user.first_name }}</td> 
                                         </tr>
                                         <tr> 
                                             <td>Last Name</td>
-                                            <td>{{ leaderuser.last_name }}</td> 
+                                            <td>{{ user.last_name }}</td> 
                                         </tr>
                                         <tr> 
                                             <td>Email</td>
-                                            <td>{{ leaderuser.email }}</td> 
+                                            <td>{{ user.email }}</td> 
                                         </tr>
                                         <tr> 
                                             <td>Biography</td>
-                                            <td>{{ leaderuser.bio }}</td> 
+                                            <td>{{ user.bio }}</td> 
                                         </tr>
                                         <tr>
                                             <td>Project</td>
-                                            <td>{{ leaderuser.project.name }}</td>
+                                            <td>{{ user.project.name }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

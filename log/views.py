@@ -8,7 +8,12 @@ from yattag import Doc
 
 # Create your views here.
 def test(request, username, project):
-    proj = Project.objects.get(name__exact=project)
+    if Project.objects.filter(name__exact=project).exists():
+        proj = Project.objects.get(name__exact=project)
+    else:
+        print(username)
+        print('------->>' + project + '<<---------')
+        return HttpResponse("No project created yet. Please create a project first.")
 
     doc, tag, text = Doc().tagtext()
     with tag('h3', id='main-title'):

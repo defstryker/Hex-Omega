@@ -45,6 +45,8 @@ class AdminUpdateForm(forms.Form):
         return self.cleaned_data.get('email')
 
 
+
+
 class UserUpdateForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.EmailInput)
     password = forms.CharField(label='Password', widget=forms.PasswordInput, min_length=6, required=False)

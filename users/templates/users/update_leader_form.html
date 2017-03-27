@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block main_content %}
-{% block title %}<h4> Update {{ leaderuser.first_name }} {{ leaderuser.last_name }} Information</h4>{% endblock %}
+{% block title %}<h4> Update {{ user.first_name }} {{ user.last_name }} Information</h4>{% endblock %}
     {% if errors %}
         <ul>
         {% for key, error in errors.items %}
@@ -36,7 +36,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label >First Name</label>
-                <input type="text" class="form-control" placeholder="First Name" name="first_name" value="{{ leaderuser.first_name }}">
+                <input type="text" class="form-control" placeholder="First Name" name="first_name" value="{{ user.first_name }}">
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label >Last Name</label>
-                <input type="text" class="form-control" placeholder="Last Name" name="last_name" value="{{ leaderuser.last_name }}">
+                <input type="text" class="form-control" placeholder="Last Name" name="last_name" value="{{ user.last_name }}">
             </div>
         </div>
     </div>
@@ -52,7 +52,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label >Email</label>
-                <input type="email" class="form-control" placeholder="Email" name="email" value="{{ leaderuser.email }}">
+                <input type="email" class="form-control" placeholder="Email" name="email" value="{{ user.email }}">
             </div>
         </div>
     </div>
@@ -68,7 +68,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label >Bio</label>
-                <textarea rows="5" class="form-control" placeholder="Description" name="bio">{{ leaderuser.bio }}</textarea>
+                <textarea rows="5" class="form-control" placeholder="Description" name="bio">{{ user.bio }}</textarea>
             </div>
         </div>
     </div>

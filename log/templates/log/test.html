@@ -1,63 +1,45 @@
 {% extends "users/base.html" %}
-{% load static %}
  {% block navi_content %}
- 
-		 <ul class="nav">
-                <li class="active">
-                    <a href="{% url 'index' %}">
-                        <i class="pe-7s-home"></i>
-                        <p>Home</p>
-                    </a>
+		
+	 {% ifequal user.groups.all.0 'admin_group' %}
+		        {%include "users/includes/navicontents_admin.html" %}
+    
+	{% else %}
+		       {%include "users/includes/navicontents_leader.html" %}
+    {% endifequal %}
 
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="pe-7s-user"></i>
-                        <p>Users</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="pe-7s-note2"></i>
-                        <p>Projects</p>
-                    </a>
-                </li>
-                
-            </ul>
+
 {% endblock %}
 {% block usernavi_content %}
-		<ul class="nav navbar-nav navbar-right">
-                        
-                        <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <p>
-										Profile
-										<b class="caret"></b>
-									</p>
-                              </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="#">Edit Profile</a></li>
-                                    
-                              </ul>
-                        </li>
-                        <li>
-                            <a href="{% url 'jump_ship' %}">
-                                <p>Log out</p>
-                            </a>
-                        </li>
-						
-            </ul>
-		           
-				   
+ {% ifequal user.groups.all.0 'admin_group' %}
+		        {%include "users/includes/usernavicontents_admin.html" %}
+    
+ {% else %}
+		       {%include "users/includes/usernavicontents_leader.html" %}
+ {% endifequal %}
+ 
+ 
 {% endblock %}
+
 {% block main_content %}
-                        <div class="header">
-                                <!-- <h2 class="title">View Project Log</h2> -->
-                        </div>
-                        <div class="content col-md-10">
-                        <h3 id="proj_title">{{project_title | safe}}</h3>
-                            {{ log_data | safe }}
-                        </div>
+<div class="header">Project Log </div>
+                <div class="content col-md-10">
+						        
+							
+									<h2 id="proj_title">{{project_title | safe}}</h2>
+									{{ log_data | safe }}
+
+							
+
+							
+							
+							
+							
+							
+							
+						
+                        
+				</div>
 
 <style>
 

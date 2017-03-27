@@ -26,13 +26,15 @@ def create_leader_user(request, username):
             mail_kickoff(user, password)
             user.save()
             update_session_auth_hash(request, request.user)
-            return redirect('admin_user_logged_in', request.user.username)
+            return redirect('display_admin', request.user.username)
     return render(request, 'users/leaderuser_form.html', {'form': form})
 
 
 def display_leader_detail(request, username):
     user = LeaderUser.objects.get(username__iexact=username)
-    return render(request, 'users/leaderdetail.html', {'leaderuser': user})
+    return render(request, 'users/leaderdetail.html', {'user': user})
+
+
 
 
 def update_leader_detail(request, username):
@@ -55,4 +57,4 @@ def update_leader_detail(request, username):
             update_session_auth_hash(request, request.user)
             return redirect('display_leader', username)
 
-    return render(request, 'users/update_leader_form.html', {'leaderuser': user, 'form': form, 'errors': form.errors})
+    return render(request, 'users/update_leader_form.html', {'user': user, 'form': form, 'errors': form.errors})

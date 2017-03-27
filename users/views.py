@@ -1,3 +1,5 @@
+import mimetypes
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -8,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import Group
 
 from HexOmega.settings import BASE_DIR
@@ -18,16 +20,11 @@ from .backends import CustomUserAuth
 from .forms.login_form import LoginForm
 from .forms.project_forms import CreateProjectForm
 from .forms.task_forms import CreateTaskForm, LeaderUpdateTaskForm
+from .forms.member_form import MemberUpdate
 
 from .Xav.user_context import url_context
 
-from log.Log import log
-
 import os
-
-"""
-    These views are only for testing the models, and their access
-"""
 
 
 def index(request):
@@ -81,9 +78,9 @@ def login_auth_2(request):
 @login_required
 def logged_in(request, username):
     if AdminUser.objects.filter(username__exact=username).count() == 1:
-        return redirect('display_admin', username)
+        return redirect('open_project', username)
     elif LeaderUser.objects.filter(username__exact=username).count() == 1:
-        return redirect('display_leader', username)
+        return redirect('leader_home', username)
     else:
         user = MemberUser.objects.get(username__exact=username)
         return redirect('member_home', username)
@@ -156,23 +153,18 @@ def leader_home(request, username):
     return render(request, 'leader_home.html', {'user': user, 'tasks': tasks})
 
 
-# @login_required
-# def create_member(request, username):
-#     pass
 class CreateMember(CreateView, LoginRequiredMixin):
     fields = ['username', 'first_name', 'last_name', 'role', 'email', 'phone']
     username = ''
     model = MemberUser
     l = None
-    template_name = 'hmm/create_member.html'
+    template_name = 'create_member.html'
 
     def form_valid(self, form):
         form.instance.project = self.l.project
         password = get_default_password()
         form.instance.set_password(password)
         mail_kickoff(form.instance, password)
-        log('INFO', self.request.user,
-            'Created user: {}[{}]'.format(form.instance.get_full_name(), form.instance.username))
         messages.add_message(self.request, messages.INFO, 'Hello world.')
         update_session_auth_hash(self.request, self.request.user)
         return super(CreateMember, self).form_valid(form)
@@ -200,17 +192,6 @@ class MemberHome(DetailView, LoginRequiredMixin):
         return context
 
 
-class UpdateMember(UpdateView, LoginRequiredMixin):
-    fields = ['first_name', 'last_name', 'role', 'email', 'phone']
-    username = ''
-    model = MemberUser
-    template_name = 'hmm/create_member.html'
-
-    def form_valid(self, form):
-        update_session_auth_hash(self.request, form.instance)
-        super(UpdateMember, self).form_valid(form)
-
-
 @login_required
 def show_tasks(request, username):
     ts = Task.objects.filter(members__username=username)
@@ -236,7 +217,6 @@ def create_project(request, username):
         if form.is_valid():
             p = form.save(commit=False)
             p.leader = LeaderUser.objects.get(username__exact=username)
-            p.status = 1
             p.save()
             path = get_project_path(p)
             os.makedirs(path, 0o755)
@@ -266,7 +246,6 @@ def create_task(request, username):
             for m in mem_dat:
                 t.members.add(m)
             t.save()
-            log('SUCCESS', l, 'Created a new task: {}'.format(t.title))
             return redirect('leader_home', username)
         else:
             print(form.errors)
@@ -282,10 +261,6 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
     template_name = 'crtask.html'
     content_type = 'multipart-form-data'
     form_class = LeaderUpdateTaskForm
-
-    def form_valid(self, form):
-        log('INFO', self.request.user, 'Task: [{}] has been updated'.format(form.instance.title))
-        super(TaskUpdate, self).form_valid(form)
 
     def get_form_kwargs(self):
         l = LeaderUser.objects.get(username__exact=self.request.user.username)
@@ -304,3 +279,114 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
         kwargs['up_flag'] = up_flag
         kwargs['up_name'] = up_name
         return kwargs
+
+
+# class UpdateMember(UpdateView, LoginRequiredMixin):
+#     fields = ['first_name', 'last_name', 'role', 'email', 'phone']
+#     username = ''
+#     model = MemberUser
+#     template_name = 'create_member.html'
+#
+#     def form_valid(self, form):
+#         update_session_auth_hash(self.request, form.instance)
+#         super(UpdateMember, self).form_valid(form)
+@login_required
+def update_member(request, username):
+    mem = MemberUser.objects.get(username__exact=username)
+    form = MemberUpdate(request.POST, initial={
+        'first_name': mem.first_name,
+        'last_name': mem.last_name,
+        'email': mem.email,
+        'phone': mem.phone
+    })
+    if request.method == 'POST':
+        if form.is_valid():
+            fn = request.POST.get('first_name')
+            ln = request.POST.get('last_name')
+            email = request.POST.get('email')
+            p = request.POST.get('password')
+            ph = request.POST.get('phone')
+            if fn is not '':
+                mem.first_name = fn
+            if ln is not '':
+                mem.last_name = ln
+            if email is not '':
+                mem.email = email
+            if (p is not None and p is not '') and len(p.strip()) >= 8:
+                mem.set_password(p)
+            if ph is not '':
+                mem.phone = ph
+            if mem.has_usable_password():
+                mem.save()
+                update_session_auth_hash(request, mem)
+                logout(request)
+                return redirect('login_page')
+        else:
+            print(form.errors)
+    else:
+        form = MemberUpdate()
+
+    return render(request, 'create_member.html', {
+        'form': form,
+        'user': mem
+    })
+
+
+def get_list_of_members(request, username):
+    """
+    Display a list of member users
+    /list/
+    :param username:
+    :param request:
+    :return:
+    """
+    member_user_list = MemberUser.objects.order_by('pk')
+    user = LeaderUser.objects.get(username__iexact=username)
+    paginator = Paginator(member_user_list, 1)  # Show 3 admin per page
+
+    page = request.GET.get('page')
+    try:
+        member_list = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        member_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        member_list = paginator.page(paginator.num_pages)
+    context = {'member_list': member_list, 'page': page, 'user': user}
+    return render(request, 'users/list_of_members.html', context)
+
+
+def delete_a_member(request, username, d):
+    """
+    Delete a member from the database
+    :param request:
+    :param username:
+    :param d:
+    :return:
+    """
+    if MemberUser.objects.get(username__iexact=d):
+        person = MemberUser.objects.get(username__iexact=d)
+        person.delete()
+    return redirect('members_list', username)
+
+
+@login_required
+def project_information(request, username, p):
+    print('Yoohoo!')
+    project = Project.objects.get(name__exact=p)
+    for p in project.actionlist.task_set.all():
+        print(p.deliverable.name.split('/')[-1])
+    return render(request, 'users/project_information.html', {'project': project})
+
+
+@login_required
+def send_file(request, username, p, task):
+    task = Task.objects.get(title__exact=task)
+    file_path = '/' + task.deliverable.url
+    print(file_path)
+    file_mimetype = mimetypes.guess_type(file_path)
+    response = HttpResponse(content_type=file_mimetype)
+    response['X-Sendfile'] = file_path
+    response['Content-Disposition'] = 'attachment; filename={}'.format(task.deliverable.name.split('/')[-1])
+    return response

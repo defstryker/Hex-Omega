@@ -1,4 +1,5 @@
 {%extends "users/base.html" %}
+{% load bootstrap3 %}
 {% block navi_content %}
 {% ifequal user.groups.all.0 'leader_group' %}
 		{%include "users/includes/navicontents_leader.html" %}
@@ -38,9 +39,18 @@
                 </tr>
                 <tr>
                     <td>Upload Deliverable</td>
-                    <td><input type="file" name="up_file"/></td>
+                    <td>
+                        <form action="{% url 'member_upload' user.username task.title %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="file" name="up_file"/><br>
+                                <button type="submit" style="color: black">
+                                    {% bootstrap_icon "" %} Submit
+                                </button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
+                <br>
                 </tbody>
 				
             </table>

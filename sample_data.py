@@ -16,12 +16,28 @@ def setup():
     adm.email = 'admin_man@example.com'
     adm.set_password('qwerty123')
     adm.save()
+	
+    adm1 = AdminUser(username='G1234567', first_name='test', last_name='man')
+    adm1.email = 'test_man@example.com'
+    adm1.set_password('qwerty123')
+    adm1.save()
+
+    adm2 = AdminUser(username='G0987654', first_name='admin', last_name='hello')
+    adm2.email = 'adminman22@example.com'
+    adm2.set_password('qwerty123')
+    adm2.save()
 
     # Create leader
     l = LeaderUser(username='69497604', first_name='leader', last_name='man')
     l.email = 'leader_man@example.com'
     l.set_password('qwerty123')
     l.save()
+	
+	 # Create leader
+    l1 = LeaderUser(username='12345678', first_name='leader', last_name='first')
+    l1.email = 'firstleader@example.com'
+    l1.set_password('qwerty123')
+    l1.save()
 
     # Create project
     p = Project(name='PMT')
@@ -31,6 +47,16 @@ def setup():
     p.save()
     p.admins.add(adm)
     p.save()
+	
+	
+	 # Create project
+    p1 = Project(name='PMT01')
+    p1.start_date = datetime.now()
+    p1.end_date = datetime.now() + timedelta(days=30)
+    p1.leader_id = l1.id
+    p1.save()
+    p1.admins.add(adm)
+    p1.save()
 
     # Create member
     m = MemberUser(username='56475644', first_name='Heracles', last_name='Alcmene')
@@ -65,7 +91,7 @@ def setup():
     t.to_leader = True
     t.save()
 
-    start_schedule_thread()
+    #start_schedule_thread()
     # tasks_email_schedule()
 
 

@@ -118,8 +118,8 @@ class Project(models.Model):
     admins = models.ManyToManyField(AdminUser)
 
     def path(self):
-        os.path.join(BASE_DIR,
-                     os.path.join('projects', self.name + '/'))
+        return os.path.join(BASE_DIR,
+                            os.path.join('projects', self.name + '/'))
 
     def __str__(self):
         return self.name
@@ -174,10 +174,12 @@ class MemberUser(User, PermissionsMixin):
 
 
 def get_path(instance, filename):
-    p = os.path.join(BASE_DIR,
-                     os.path.join('projects', instance.action_list.project.name + '/'))
+    p = instance.action_list.project.path()
     print(p)
-    f = os.path.join(p, filename)
+    if type(filename) is str:
+        f = os.path.join(p, filename)
+    else:
+        f = os.path.join(p, filename.name)
     print(f)
     return f
 
@@ -219,9 +221,6 @@ class Task(models.Model):
     deliverable = models.FileField(upload_to=get_path, blank=True, null=True)
     to_leader = models.NullBooleanField(verbose_name="Is the leader working on this Task?", null=True)
     members = models.ManyToManyField(MemberUser)
-
-    def deliverable_name(self):
-        return self.deliverable.name
 
     def __str__(self):
         return self.title

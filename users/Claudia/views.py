@@ -4,7 +4,7 @@ from .user_form import AdminUserForm, AdminUpdateForm, UserUpdateForm
 
 from users.models import User
 
-from users.Claudia.filters import SearchFilter
+from users.filters import SearchFilter
 
 
 @login_required
@@ -46,6 +46,17 @@ def get_admin_detail(request, username):
     user = AdminUser.objects.get(username__iexact=username)
     return render(request, 'users/user_information.html', {'adminuser': user})
 
+
+@login_required
+def get_member_detail(request, username):
+    """
+    Display the information of a member user
+    :param request:
+    :param username:
+    :return:
+    """
+    user = MemberUser.objects.get(username__iexact=username)
+    return render(request, 'users/member_information.html', {'memberuser': user})
 
 # abhi's test decorator : removed from repo
 # @viewing_context
@@ -118,8 +129,7 @@ def display_open_projects(request, username):
         open_project_list = open_proj_paginator.page(1)
     except EmptyPage:
         open_project_list = open_proj_paginator.page(open_proj_paginator.num_pages)
-    return render(request, 'users/open_project_list.html',
-                  {'open_project_list': open_project_list, 'page': open_proj_page})
+    return render(request, 'users/open_project_list.html', {'open_project_list': open_project_list, 'page': open_proj_page})
 
 
 @login_required
@@ -132,6 +142,8 @@ def project_information(request, username, p):
     :return:
     """
     project = Project.objects.get(name__exact=p)
+    for p in project.actionlist.task_set.all():
+        print(p.deliverable.name.split('/')[-1])
     return render(request, 'users/project_information.html', {'project': project})
 
 
@@ -157,6 +169,9 @@ def user_update(request, username, user):
             update_session_auth_hash(request, request.user)
             return redirect('list_of_users', username)
     return render(request, 'users/user_update_form.html', {'form': form, 'errors': form.errors, 'user': person})
+
+
+
 
 
 @login_required
@@ -223,3 +238,16 @@ def search_users(request, username):
         result_list = SearchFilter(request.GET, queryset=queryset)
         return render(request, 'users/search.html', {'result_list': result_list})
     return render(request, 'users/search.html')
+
+def delete_project(request, username, d):
+    """
+    Delete a project from the system
+    :param request:
+    :param username:
+    :param d:
+    :return:
+    """
+    if Project.objects.get(name__iexact=d):
+        project = Project.objects.get(name__iexact=d)
+        project.delete()
+    return redirect('all_project', username)
