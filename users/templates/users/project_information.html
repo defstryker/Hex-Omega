@@ -66,6 +66,12 @@
                         {% endfor %}
                     </td>
                 </tr>
+                <tr>
+                    <td>Project Logs</td>
+                    <td>
+                        <a href="{% url 'admin_log' user.username project.name %}">View Log </a>
+                    </td>
+                </tr>
                 </tbody>
             </table>
 
