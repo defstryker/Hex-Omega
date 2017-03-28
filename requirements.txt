@@ -13,3 +13,5 @@ django-bootstrap3
 django-bootstrap-datepicker
 django-ajax-selects
 django-filter
+dj_database_url
+psycopg2
