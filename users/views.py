@@ -24,6 +24,8 @@ from .forms.member_form import MemberUpdate
 
 from .Xav.user_context import url_context
 
+from log.Log import log
+
 import os
 
 
@@ -112,6 +114,7 @@ def member_upload(request, username, task):
     if 'up_file' in request.FILES:
         t.deliverable = request.FILES['up_file']
         t.save()
+        log('SUCCESS', MemberUser.objects.get(username__exact=username), '{} uploaded a deliverable for {}'.format(username, t.title))
         print(t.deliverable.url)
     else:
         print('No file!!')
@@ -177,7 +180,7 @@ class CreateMember(CreateView, LoginRequiredMixin):
         password = get_default_password()
         form.instance.set_password(password)
         mail_kickoff(form.instance, password)
-        messages.add_message(self.request, messages.INFO, 'Hello world.')
+        messages.add_message(self.request, messages.INFO, 'User [{}] created.'.format(form.instance.username))
         update_session_auth_hash(self.request, self.request.user)
         return super(CreateMember, self).form_valid(form)
 
@@ -255,9 +258,11 @@ def create_task(request, username):
             t = Task.objects.create(title=title, est_end=est_end, status=status, to_leader=lt,
                                     action_list=l.project.actionlist)
             t.save()
+
             for m in mem_dat:
                 t.members.add(m)
             t.save()
+            log('INFO', l, '{} added a new Task [{}]'.format(l.username, t.title))
             return redirect('leader_home', username)
         else:
             print(form.errors)
@@ -290,18 +295,10 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
         kwargs['pn'] = l.project.name
         kwargs['up_flag'] = up_flag
         kwargs['up_name'] = up_name
+        log('INFO', l, '{} made changes to Task [{}]'.format(l.username, t.title))
         return kwargs
 
 
-# class UpdateMember(UpdateView, LoginRequiredMixin):
-#     fields = ['first_name', 'last_name', 'role', 'email', 'phone']
-#     username = ''
-#     model = MemberUser
-#     template_name = 'create_member.html'
-#
-#     def form_valid(self, form):
-#         update_session_auth_hash(self.request, form.instance)
-#         super(UpdateMember, self).form_valid(form)
 @login_required
 def update_member(request, username):
     mem = MemberUser.objects.get(username__exact=username)
@@ -345,16 +342,9 @@ def update_member(request, username):
 
 
 def get_list_of_members(request, username):
-    """
-    Display a list of member users
-    /list/
-    :param username:
-    :param request:
-    :return:
-    """
-    member_user_list = MemberUser.objects.order_by('pk')
+    member_user_list = MemberUser.objects.order_by('pk').filter(project__leader__username=username)
     user = LeaderUser.objects.get(username__iexact=username)
-    paginator = Paginator(member_user_list, 1)  # Show 3 admin per page
+    paginator = Paginator(member_user_list, 5)  # Show 3 admin per page
 
     page = request.GET.get('page')
     try:
@@ -370,13 +360,6 @@ def get_list_of_members(request, username):
 
 
 def delete_a_member(request, username, d):
-    """
-    Delete a member from the database
-    :param request:
-    :param username:
-    :param d:
-    :return:
-    """
     if MemberUser.objects.get(username__iexact=d):
         person = MemberUser.objects.get(username__iexact=d)
         person.delete()
@@ -396,10 +379,13 @@ def project_information(request, username, p):
 def send_file(request, username, p, task):
     task = Task.objects.get(title__exact=task)
     file_path = '/' + task.deliverable.url
-    print(file_path)
+    if '%20' in file_path:
+        file_path = file_path.replace('%20', ' ')
     file_mimetype = mimetypes.guess_type(file_path)
     if os.path.exists(file_path):
         with open(file_path, 'rb') as fh:
             response = HttpResponse(fh.read(), content_type=file_mimetype)
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
             return response
+    else:
+        return HttpResponse('File retrieval error.')

@@ -27,8 +27,6 @@ urlpatterns = [
     # members update themselves
     url(r'^member_user/(?P<username>[A-Z0-9][0-9]{7})/update-member/$', views.update_member, name="update_member"),
 
-    
-
     # user delete view
     url(r'^user/(?P<username>[A-Z0-9][0-9]{7})/delete/(?P<d>[A-Z0-9][0-9]{7})/$', views.delete_admin,
         name="delete_admin"),
@@ -48,8 +46,8 @@ urlpatterns = [
     # user dispatch
     url(r'^user/(?P<username>[A-Z0-9][0-9]{7})/$', views.logged_in, name="user_logged_in"),
 
-    #upload deliverable
-    url(r'^member_user/(?P<username>[A-Z0-9][0-9]{7})/tasks/(?P<task>[A-Za-z]+)/$', views.member_upload,
+    # upload deliverable
+    url(r'^member_user/(?P<username>[A-Z0-9][0-9]{7})/tasks/(?P<task>[A-Za-z0-9\s]+)/$', views.member_upload,
         name='member_upload'),
 
     # ----- Claudia
@@ -66,10 +64,10 @@ urlpatterns = [
         name='delete_user'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/project/$", cv.display_all_projects, name='all_project'),
     url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/open_project/$", cv.display_open_projects, name='open_project'),
-    url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<p>[a-zA-Z0-9_]{1,10})/project_detail/$",
+    url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<p>[a-zA-Z0-9\s]{1,10})/project_detail/$",
         views.project_information, name='project_detail'),
     url(r"^member_user/(?P<username>[A-Z0-9][0-9]{7})/details/$", cv.get_member_detail, name='display_member'),
-    url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/delete_project/(?P<d>[a-zA-Z0-9_]{1,10})/$", cv.delete_project,
+    url(r"^admin_user/(?P<username>[A-Z0-9][0-9]{7})/delete_project/(?P<d>[a-zA-Z0-9\s]{1,10})/$", cv.delete_project,
         name='delete_project'),
 
     # ----- Xav
@@ -82,18 +80,15 @@ urlpatterns = [
 
     # Log Update
 
-    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z0-9]*)/log/$', test, name='leader_log'),
-    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z0-9]*)/log/$', test, name='admin_log'),
+    url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z0-9\s]*)/log/$', test, name='leader_log'),
+    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<project>[A-Za-z0-9\s]*)/log/$', test, name='admin_log'),
 
     url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/list/$', views.get_list_of_members, name='members_list'),
 
     url(r'^leader_user/(?P<username>[A-Z0-9][0-9]{7})/delete/(?P<d>[A-Z0-9][0-9]{7})/$', views.delete_a_member,
         name='delete_member'),
 
-    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<p>[a-zA-Z0-9_]{1,10})/project_detail/(?P<task>[a-zA-Z0-9_]+)$',
+    url(r'^admin_user/(?P<username>[A-Z0-9][0-9]{7})/(?P<p>[a-zA-Z0-9\s]{1,10})/project_detail/(?P<task>[a-zA-Z0-9\s]+)$',
         views.send_file, name='download_deliverable')
-    
-
-    
 
 ]

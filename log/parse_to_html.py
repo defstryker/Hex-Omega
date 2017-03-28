@@ -17,6 +17,7 @@ class parse_log(object):
         else:
             self.logfile = open(self.logpath, 'w')
             self.logfile.close()
+            self.logfile = open(self.logpath, 'r')
         self.log_data = self.logfile.readlines()
 
     def test(self):
