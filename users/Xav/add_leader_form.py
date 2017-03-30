@@ -3,7 +3,7 @@ from users.models import LeaderUser
 
 
 class LeaderForm(forms.Form):
-    username = forms.CharField(label='Username', max_length=10)
+    username = forms.CharField(label='Username', max_length=8, min_length=8)
     first_name = forms.CharField(label='First Name', max_length=30)
     last_name = forms.CharField(label='Last Name', max_length=30)
     email = forms.EmailField(label='Email')

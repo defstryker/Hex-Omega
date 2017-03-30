@@ -30,13 +30,13 @@
                          <td>{{ users.last_name }}</td>
                          <td>{{ users.email }}</td>
                          <td style="text-align:center">
-                             <a href="{% url 'update_user' request.user.username users.username %}">
+                             <a href="{% url 'update_user' username=request.user.username user=users.username %}">
                                  <div class="font-icon-detail"><i class="pe-7s-note"></i>
                                  </div>
                              </a>
                          </td>
                          <td style="text-align:center">
-                             <a href="{% url 'delete_user' request.user.username users.username %}">
+                             <a href="{% url 'delete_user' username=request.user.username d=users.username %}">
                                  <div class="font-icon-detail"><i class="pe-7s-trash"></i>
                                  </div>
                              </a>

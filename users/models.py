@@ -140,6 +140,10 @@ def add_activitylog(sender, instance, created, **kwargs):
         instance.path = '/'.join(c.split('/')[:-1]) + '/'
         # instance.save()
         ActivityLog.objects.create(title=instance.name, project=instance, content=c)
+        if not os.path.exists('/'.join(c.split('/')[:-1])):
+            os.mkdir('/'.join(c.split('/')[:-1]), 0o755)
+        f = open(c, 'w+')
+        f.close()
 
 
 @receiver(post_save, sender=Project)

@@ -58,6 +58,7 @@ def get_member_detail(request, username):
     user = MemberUser.objects.get(username__iexact=username)
     return render(request, 'users/member_information.html', {'memberuser': user})
 
+
 # abhi's test decorator : removed from repo
 # @viewing_context
 @login_required
@@ -129,7 +130,8 @@ def display_open_projects(request, username):
         open_project_list = open_proj_paginator.page(1)
     except EmptyPage:
         open_project_list = open_proj_paginator.page(open_proj_paginator.num_pages)
-    return render(request, 'users/open_project_list.html', {'open_project_list': open_project_list, 'page': open_proj_page})
+    return render(request, 'users/open_project_list.html',
+                  {'open_project_list': open_project_list, 'page': open_proj_page})
 
 
 @login_required
@@ -156,11 +158,12 @@ def user_update(request, username, user):
     :param user:
     :return:
     """
+    adm = AdminUser.objects.get(username=username)
     person = User.objects.get(username__iexact=user)
     form_data = {'email': person.email, 'password': " "}
     form = UserUpdateForm(request.POST, initial=form_data)
     if request.method == 'POST':
-        if form.is_valid():
+        if form.is_valid() and username != '10101010':
             person.email = request.POST.get('email')
             pw = request.POST['password']
             if (pw is not '' or pw is not None) and len(pw.strip()) >= 8:
@@ -169,9 +172,6 @@ def user_update(request, username, user):
             update_session_auth_hash(request, request.user)
             return redirect('list_of_users', username)
     return render(request, 'users/user_update_form.html', {'form': form, 'errors': form.errors, 'user': person})
-
-
-
 
 
 @login_required
@@ -183,7 +183,7 @@ def delete_a_user(request, username, d):
     :param d:
     :return:
     """
-    if User.objects.get(username__iexact=d):
+    if username != '10101010' and User.objects.get(username__iexact=d):
         person = User.objects.get(username__iexact=d)
         person.delete()
     return redirect('list_of_users', username)
@@ -238,6 +238,7 @@ def search_users(request, username):
         result_list = SearchFilter(request.GET, queryset=queryset)
         return render(request, 'users/search.html', {'result_list': result_list})
     return render(request, 'users/search.html')
+
 
 def delete_project(request, username, d):
     """

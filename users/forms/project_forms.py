@@ -13,7 +13,7 @@ class CreateProjectForm(ModelForm):
             'end_date': forms.DateTimeInput(attrs={'class': 'datetime-input'}),
         }
         help_texts = {
-            'start_date': 'Please do not change the format',
-            'end_date': 'Please do not change the format',
+            'start_date': "Please use this format: 'YYYY-MM-DD'",
+            'end_date': "Please use this format: 'YYYY-MM-DD'",
             'admins': 'Hold Control to select multiple choices'
         }

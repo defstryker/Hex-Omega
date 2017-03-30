@@ -26,8 +26,7 @@
                      <td>{{ proj.end_date }}</td>
                      {% if proj.status == '0' %}
                          <td>Open</td>
-                     {% endif %}
-                     {% if proj.status == '1' %}
+                     {% else %}
                          <td>Closed</td>
                      {% endif %}
                  </tr>

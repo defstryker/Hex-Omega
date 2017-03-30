@@ -20,7 +20,7 @@ from .backends import CustomUserAuth
 from .forms.login_form import LoginForm
 from .forms.project_forms import CreateProjectForm
 from .forms.task_forms import CreateTaskForm, LeaderUpdateTaskForm
-from .forms.member_form import MemberUpdate
+from .forms.member_form import MemberUpdate, MemberCreate
 
 from .Xav.user_context import url_context
 
@@ -85,7 +85,7 @@ def logged_in(request, username):
         return redirect('leader_home', username)
     else:
         user = MemberUser.objects.get(username__exact=username)
-        return redirect('member_home', username)
+        return redirect('task_list', username)
 
 
 @login_required
@@ -114,7 +114,9 @@ def member_upload(request, username, task):
     if 'up_file' in request.FILES:
         t.deliverable = request.FILES['up_file']
         t.save()
-        log('SUCCESS', MemberUser.objects.get(username__exact=username), '{} uploaded a deliverable for {}'.format(username, t.title))
+        mail_kickoff(MemberUser.objects.get(username__exact=username), t, var=3)
+        log('SUCCESS', MemberUser.objects.get(username__exact=username),
+            '{} uploaded a deliverable for {}'.format(username, t.title))
         print(t.deliverable.url)
     else:
         print('No file!!')
@@ -169,7 +171,8 @@ def leader_home(request, username):
 
 
 class CreateMember(CreateView, LoginRequiredMixin):
-    fields = ['username', 'first_name', 'last_name', 'role', 'email', 'phone']
+    # fields = ['username', 'first_name', 'last_name', 'role', 'email', 'phone']
+    form_class = MemberCreate
     username = ''
     model = MemberUser
     l = None
@@ -214,8 +217,6 @@ def show_tasks(request, username):
     return render(request, 'list.html', {'tasks': ts})
 
 
-# summer-paper-4342
-
 # ============================================================================
 # My project and tasks modules
 # 2017-03-22
@@ -233,8 +234,15 @@ def create_project(request, username):
             p = form.save(commit=False)
             p.leader = LeaderUser.objects.get(username__exact=username)
             p.save()
+            for a in request.POST.get('admins'):
+                p.admins.add(a)
             path = get_project_path(p)
-            os.makedirs(path, 0o755)
+            # os.makedirs(path, 0o755)
+            if not os.path.exists(path):
+                os.mkdir(path, 0o755)
+            if not os.path.exists(os.path.join(path, 'activity.log')):
+                f = open(os.path.join(path, 'activity.log'), 'w+')
+                f.close()
         return redirect('display_leader', username)
     else:
         form = CreateProjectForm()
@@ -289,6 +297,8 @@ class TaskUpdate(UpdateView, LoginRequiredMixin):
             up_name = t.deliverable.name.split('/')[-1]
             t.status = 'Completed'
             t.save()
+            log('SUCCESS', l, '{} uploaded a deliverable to Task [{}]'.format(l.username, t.title))
+            mail_kickoff(l, t, var=3)
         p = self.request.get_full_path()
         self.success_url = '/'.join(p.split('/')[:-3]) + '/'
         kwargs = super(TaskUpdate, self).get_form_kwargs()
@@ -326,8 +336,8 @@ def update_member(request, username):
             if ph is not '':
                 mem.phone = ph
             if mem.has_usable_password():
-                mem.save()
                 update_session_auth_hash(request, mem)
+                mem.save()
                 logout(request)
                 return redirect('login_page')
         else:
@@ -337,7 +347,8 @@ def update_member(request, username):
 
     return render(request, 'update_member.html', {
         'form': form,
-        'user': mem
+        'user': mem,
+        'title': 'Update'
     })
 
 

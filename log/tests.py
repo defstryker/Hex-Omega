@@ -1,6 +1,8 @@
 from django.test import TestCase
 from parse import *
 
+from datetime import datetime, timedelta
+
 from log.Log import log
 from users.models import *
 
@@ -64,7 +66,7 @@ class LogTest(TestCase):
         logfile = f.readlines()[0]
         data = parse('[{}] [{}] [{}] [{}] [{}] [{}]', logfile)
         TestCase.assertEquals(self, data[0], 'INFO')
-        TestCase.assertEquals(self, data[1], m.username)
+        TestCase.assertEquals(self, data[1], m.get_full_name())
         TestCase.assertEquals(self, data[2], 'MEMBER')
         TestCase.assertEquals(self, data[3], m.project.name)
         TestCase.assertEquals(self, data[5], 'test content')
@@ -79,7 +81,7 @@ class LogTest(TestCase):
         logfile = f.readlines()[1]
         data = parse('[{}] [{}] [{}] [{}] [{}] [{}]', logfile)
         TestCase.assertEquals(self, data[0], 'WARNING')
-        TestCase.assertEquals(self, data[1], l.username)
+        TestCase.assertEquals(self, data[1], l.get_full_name())
         TestCase.assertEquals(self, data[2], 'LEADER')
         TestCase.assertEquals(self, data[3], l.project.name)
         TestCase.assertEquals(self, data[5], 'leader log record')
@@ -101,7 +103,7 @@ class LogTest(TestCase):
         self.Test_log_contains_info_member()
         self.Test_log_contains_warning_leader()
 
-        p = Project.objects.get(name__exact='Test')
+        p = Project.objects.get(name__exact='Hell')
 
         f = open(p.activitylog.content, 'r')
         logfile = f.readlines()

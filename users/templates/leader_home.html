@@ -69,6 +69,7 @@
 			<div class="col-md-12">
                         <div class="card">
 						<div style="padding: 5% 20%; ">
+                                <h1 style="color: white;">Tasks</h1>
 								{% if not user.project %}
 									{% buttons %}
 										<a href="{% url 'create_project' user.username %}">
@@ -78,11 +79,51 @@
 									{% endbuttons %}
 										</a>
 								{% else %}
-									{% for task in tasks %}
-										<li style="list-style-type: none;"><h3>
-                                            <a style="color: white;" href="{% url 'leader_update_task' username=user.username pk=task.id %}">{{ task.title|pprint|linenumbers }} - {{ task.est_end|date }}</a>
-                                        </h3></li>
-									{% endfor %}
+
+                                    <div class="col-md-6">
+                                        <div class="content table-responsive table-full-width" >
+
+                                            <table class="table" id="tabledetails" style="color: white;">
+                                            {% for task in tasks %}
+                                                <thead>
+                                                <tr>
+                                                    <!-- <td class="col-xs-3">Task </td> -->
+                                                    <td>
+                                                    <a style="color: white;" href="{% url 'leader_update_task' username=user.username pk=task.id %}">
+                                                        <h3>{{ task.title }}</h3>
+                                                    </a>
+                                                    </td>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <tr>
+                                                    <td class="col-xs-3">Status </td>
+                                                    <td>{{ task.status|center:'50' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                    <td class="col-xs-3">Deadline </td>
+                                                    <td>{{ task.est_end|date|center:'50' }}</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                    <td class="col-xs-3">Members involved </td>
+                                                    <td>{{ task.members.all|unordered_list|center:'50' }}</td>
+                                                    </tr>
+
+                                                    <tr>
+                                                    <td class="col-xs-3">Am I doing this? </td>
+                                                    <td>{{ task.to_leader|center:'50' }}</td>
+                                                    </tr>
+                                                </tr>
+
+                                                </tbody>
+                                            {% endfor %}
+                                            </table>
+
+                                        </div>
+                                    </div>
+
 								{% endif %}
 								<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
                                 <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">

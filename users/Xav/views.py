@@ -30,13 +30,13 @@ def create_leader_user(request, username):
     return render(request, 'users/leaderuser_form.html', {'form': form})
 
 
+@login_required
 def display_leader_detail(request, username):
     user = LeaderUser.objects.get(username__iexact=username)
     return render(request, 'users/leaderdetail.html', {'user': user})
 
 
-
-
+@login_required
 def update_leader_detail(request, username):
     user = LeaderUser.objects.get(username__iexact=username)
     form_data = {'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name,

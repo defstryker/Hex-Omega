@@ -22,7 +22,7 @@ class CreateTaskForm(ModelForm):
             'members': forms.CheckboxSelectMultiple()
         }
         help_texts = {
-            'est_end': 'Please do not change the format',
+            'est_end': "Please use this format: 'YYYY-MM-DD'",
             'users': 'Hold down Control/Cmd to select more than member for the task.'
         }
 

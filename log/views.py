@@ -17,9 +17,9 @@ def test(request, username, project):
 
     user = ''
     if AdminUser.objects.filter(username__exact=username).count() is 1:
-    	user = AdminUser.objects.get(username__exact=username)
+        user = AdminUser.objects.get(username__exact=username)
     else:
-    	user = LeaderUser.objects.get(username__exact=username)
+        user = LeaderUser.objects.get(username__exact=username)
 
     doc, tag, text = Doc().tagtext()
     with tag('h3', id='main-title'):

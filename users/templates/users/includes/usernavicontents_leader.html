@@ -14,11 +14,13 @@
                               </ul>
 							  
                         </li>
+                        {% if not user.project %}
 						<li>
                             <a href="{% url 'create_project' user.username %}">
                                 <p>Create Project</p>
                             </a>
                         </li>
+                        {% endif %}
 						<li>
                             <a href="{% url 'create_member' user.username %}">
                                 <p>Create Member</p>
