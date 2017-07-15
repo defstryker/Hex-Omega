@@ -1,5 +1,6 @@
 from yattag import Doc
 from parse import *
+import os
 
 from users.models import Project
 
@@ -10,7 +11,13 @@ class parse_log(object):
         # self.logpath = Project.objects.get(name__exact=self.project.name).activitylog.content
         self.logpath = project.activitylog.content
         print(self.logpath)
-        self.logfile = open(self.logpath, 'r')
+
+        if os.path.exists(self.logpath):
+            self.logfile = open(self.logpath, 'r')
+        else:
+            self.logfile = open(self.logpath, 'w')
+            self.logfile.close()
+            self.logfile = open(self.logpath, 'r')
         self.log_data = self.logfile.readlines()
 
     def test(self):
@@ -37,7 +44,7 @@ class parse_log(object):
             with tag('div', klass=k):
                 # with tag('h4'):
                 #     text(data[0])
-                with tag('b'):
+                with tag('span', klass='username'):
                     text(data[1] + ' ')
                 with tag('i'):
                     text(data[4] + ' ')

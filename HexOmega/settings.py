@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import pickle
+import time
 import users
+
+# from users.utils import start_schedule_thread
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +29,11 @@ SECRET_KEY = 'f=zxeatkxp9*a18v(mr8wt+6-2b2)s643enssg4tp(q%_1&(g2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '*'
+]
 
 # Application definition
 
@@ -37,9 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'guardian',
+    'bootstrap3',
     'annoying',
+    'django_cron',
     'users',
     'log',
+    
 ]
 
 MIDDLEWARE = [
@@ -77,12 +88,17 @@ WSGI_APPLICATION = 'HexOmega.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG is True:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    import dj_database_url
+    DATABASES = dict()
+    DATABASES['default'] = dj_database_url.config()
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -136,3 +152,15 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 LOGIN_REDIRECT_URL = '/login/'
 LOGIN_URL = '/login/'
+
+# Mail settings
+#o = open('HexOmega/pwd.dump', 'rb')
+#EMAIL_HOST = 'smtp.yandex.com'
+#EMAIL_PORT = 465
+#EMAIL_USE_SSL = True
+#EMAIL_HOST_USER = 'hex.omega@yandex.com'
+#EMAIL_HOST_PASSWORD = pickle.load(o)
+
+# schedule.every().day.at('09:00').do(start_schedule_thread)
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

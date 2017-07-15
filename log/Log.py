@@ -26,6 +26,9 @@ def log(level, user, content, **kwargs):
     # path from BASE_DIR(mentioned in settings.py).
     # l = MemberUser.objects.get(username__contains=username)
     # print(l.username)
+    # INFO = 'INFO'
+    # WARNING = 'WARNING'
+    # SUCCESS = 'SUCCESS'
     access_level = None
     if user.is_admin:
         access_level = 'ADMIN'
@@ -43,7 +46,7 @@ def log(level, user, content, **kwargs):
         raise ValueError('Empty path to log file.')
     else:
         f = open(logfile, 'a')
-        print('[{}] [{}] [{}] [{}] [{}] [{}]'.format(level, user.username, access_level, user.project.name, data, content),
+        print('[{}] [{}] [{}] [{}] [{}] [{}]'.format(level, user.get_full_name(), access_level, user.project.name, data, content),
               file=f)
         f.flush()
         f.close()
